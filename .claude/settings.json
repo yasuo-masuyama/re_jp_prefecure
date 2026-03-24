@@ -1,6 +1,6 @@
 {
   "permissions": {
-    "allow": ["Bash(git:*)", "Bash(bundle:*)"],
+    "allow": ["Bash(git:*)", "Bash(bundle:*)", "Bash(gh:*)"],
     "deny": ["Bash(rm -rf:*)", "Bash(sudo:*)", "Read(.env)"]
   },
   "includeCoAuthoredBy": false,
@@ -9,6 +9,17 @@
   },
   "language": "ja",
   "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/gh-setup.sh",
+            "timeout": 120
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Write|Edit",

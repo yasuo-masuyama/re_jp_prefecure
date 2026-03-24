@@ -1,4 +1,8 @@
-/.bundle/
+# bundler state
+/.bundle
+/vendor/bundle/
+/vendor/ruby/
+
 /.yardoc
 /_yardoc/
 /coverage/

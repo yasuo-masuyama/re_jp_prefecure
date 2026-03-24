@@ -66,12 +66,23 @@ git push origin HEAD
 
 ### 5. PR作成
 
-`.github/pull_request_template.md` を読み取り、各セクションを変更内容に合わせて埋めてPRを作成する。
+PRタイトルは対応するIssueのタイトルに揃える。ブランチ名 `dev/番号_説明` の番号から対応Issueを特定し、`gh issue view <番号>` でタイトルを取得する。
+
+PR本文は `.github/pull_request_template.md` を読み取り、各セクションを変更内容に合わせて埋める。概要セクションの直下に `- close: <Issue URL>` を記載し、マージ時にIssueを自動クローズする。
 
 ```bash
 gh pr create \
-  --title "<プレフィックス>: <変更内容の要約>" \
-  --body "<pull_request_template.mdの各セクションを埋めた内容>" \
+  --title "<Issueのタイトル>" \
+  --body "## 概要
+
+- close: https://github.com/yasuo-masuyama/re_jp_prefecure/issues/<番号>
+
+（何を変更したか）
+
+## 確認方法
+...
+## 影響範囲
+..." \
   --base master
 ```
 

@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe JpPrefecture do
-  describe ".config" do
-    before { JpPrefecture.instance_variable_set(:@config, nil) }
-    after  { JpPrefecture.instance_variable_set(:@config, nil) }
+  before { JpPrefecture.instance_variable_set(:@config, nil) }
+  after  { JpPrefecture.instance_variable_set(:@config, nil) }
 
+  describe ".config" do
     it "ReJpPrefecture::Config のインスタンスを返す" do
       expect(JpPrefecture.config).to be_a(ReJpPrefecture::Config)
     end
@@ -17,9 +17,6 @@ RSpec.describe JpPrefecture do
   end
 
   describe ".setup" do
-    before { JpPrefecture.instance_variable_set(:@config, nil) }
-    after  { JpPrefecture.instance_variable_set(:@config, nil) }
-
     it "ブロックに config を渡して設定値を変更できる" do
       JpPrefecture.setup do |config|
         config.mapping_data = "/path/to/custom_prefecture.yml"

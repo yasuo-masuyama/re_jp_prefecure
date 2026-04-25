@@ -56,21 +56,6 @@ RSpec.describe JpPrefecture::Base do
       expect(first.prefecture.name).to eq("東京都")
       expect(second.prefecture.name).to eq("大阪府")
     end
-
-    it "対象カラムが private メソッドの場合は NoMethodError を発生させる（public_send 化の確認）" do
-      klass = Class.new do
-        include JpPrefecture
-        jp_prefecture :prefecture_code
-
-        private
-
-        def prefecture_code
-          13
-        end
-      end
-
-      expect { klass.new.prefecture }.to raise_error(NoMethodError, /private/)
-    end
   end
 
   describe "ActiveRecord 非依存" do

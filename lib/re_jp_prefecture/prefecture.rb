@@ -8,17 +8,23 @@ module JpPrefecture
 
     attr_reader(*ATTRIBUTES)
 
-    def initialize(attrs)
-      ATTRIBUTES.each do |key|
-        instance_variable_set("@#{key}", attrs[key])
-      end
+    def initialize(code:, name:, name_e:, name_r:, name_h:, name_k:, area:, type:, zips:)
+      @code = code
+      @name = name
+      @name_e = name_e
+      @name_r = name_r
+      @name_h = name_h
+      @name_k = name_k
+      @area = area
+      @type = type
+      @zips = zips
     end
 
     class << self
       def all
         zip_mapping = current_zip_mapping_data
         current_mapping_data.map do |code, attrs|
-          new(attrs.merge(code: code, zips: build_zips(zip_mapping[code])))
+          new(code: code, zips: build_zips(zip_mapping[code]), **attrs)
         end
       end
 

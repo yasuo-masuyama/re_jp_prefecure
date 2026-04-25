@@ -20,16 +20,18 @@ RSpec.describe JpPrefecture::Searchable do
   end
 
   let(:dummy_class) do
-    target = records
+    all_records = records
+
     Class.new do
       extend JpPrefecture::Searchable
-      define_singleton_method(:all) { target }
+      define_singleton_method(:all) { all_records }
     end
   end
 
   describe ".find_by_code" do
     it "完全一致でインスタンスを返す" do
       result = dummy_class.find_by_code(13)
+
       expect(result.name).to eq("東京都")
     end
 
@@ -145,6 +147,7 @@ RSpec.describe JpPrefecture::Searchable do
   describe "Template Method 契約" do
     it "extend 先の .all を呼び出して検索する" do
       expect(dummy_class).to receive(:all).and_call_original
+
       dummy_class.find_by_code(1)
     end
 

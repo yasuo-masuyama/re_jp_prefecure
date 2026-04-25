@@ -34,7 +34,7 @@ RSpec.describe JpPrefecture::Prefecture do
   end
 
   describe "属性" do
-    let(:hokkaido) { described_class.build_by_code(1) }
+    let(:hokkaido) { described_class.find_by_code(1) }
 
     it "name / name_e / name_r / name_h / name_k / area / type / zips を持つ" do
       expect(hokkaido.code).to eq(1)
@@ -62,20 +62,31 @@ RSpec.describe JpPrefecture::Prefecture do
     end
   end
 
-  describe ".build_by_code" do
+  describe ".find_by_code" do
     it "Integer のコードに対応するインスタンスを返す" do
-      pref = described_class.build_by_code(13)
+      pref = described_class.find_by_code(13)
       expect(pref).to be_a(described_class)
       expect(pref.name).to eq("東京都")
     end
 
     it "存在しないコードに対しては nil を返す" do
-      expect(described_class.build_by_code(99)).to be_nil
+      expect(described_class.find_by_code(99)).to be_nil
     end
 
     it "0 や負数に対しても nil を返す" do
-      expect(described_class.build_by_code(0)).to be_nil
-      expect(described_class.build_by_code(-1)).to be_nil
+      expect(described_class.find_by_code(0)).to be_nil
+      expect(described_class.find_by_code(-1)).to be_nil
+    end
+  end
+
+  describe ".build_by_code" do
+    it "find_by_code のエイリアスとして動作する" do
+      expect(described_class.method(:build_by_code).original_name).to eq(:find_by_code)
+    end
+
+    it "find_by_code と同じ結果を返す" do
+      expect(described_class.build_by_code(13).name).to eq("東京都")
+      expect(described_class.build_by_code(99)).to be_nil
     end
   end
 
@@ -97,14 +108,14 @@ RSpec.describe JpPrefecture::Prefecture do
 
     it "Config.mapping_data が Hash の場合、その内容で上書きされる" do
       JpPrefecture.setup { |c| c.mapping_data = custom_mapping }
-      pref = described_class.build_by_code(1)
+      pref = described_class.find_by_code(1)
       expect(pref.name).to eq("カスタム北海道")
       expect(pref.area).to eq("カスタム")
     end
 
     it "Config.zip_mapping_data が Hash の場合、その内容で zips が上書きされる" do
       JpPrefecture.setup { |c| c.zip_mapping_data = custom_zip_mapping }
-      pref = described_class.build_by_code(1)
+      pref = described_class.find_by_code(1)
       expect(pref.zips).to eq([(1..9)])
     end
 
@@ -114,7 +125,7 @@ RSpec.describe JpPrefecture::Prefecture do
         f.write(YAML.dump(custom_mapping))
         f.flush
         JpPrefecture.setup { |c| c.mapping_data = f.path }
-        pref = described_class.build_by_code(1)
+        pref = described_class.find_by_code(1)
         expect(pref.name).to eq("カスタム北海道")
       end
     end
@@ -125,17 +136,17 @@ RSpec.describe JpPrefecture::Prefecture do
         f.write(YAML.dump(custom_zip_mapping))
         f.flush
         JpPrefecture.setup { |c| c.zip_mapping_data = f.path }
-        pref = described_class.build_by_code(1)
+        pref = described_class.find_by_code(1)
         expect(pref.zips).to eq([(1..9)])
       end
     end
 
     it "setup を後から呼んでも次回アクセスから反映される" do
-      first = described_class.build_by_code(1)
+      first = described_class.find_by_code(1)
       expect(first.name).to eq("北海道")
 
       JpPrefecture.setup { |c| c.mapping_data = custom_mapping }
-      second = described_class.build_by_code(1)
+      second = described_class.find_by_code(1)
       expect(second.name).to eq("カスタム北海道")
     end
   end
@@ -189,7 +200,7 @@ RSpec.describe JpPrefecture::Prefecture do
       expect(YAML).to receive(:load_file).at_most(:twice).and_call_original
       described_class.all
       described_class.all
-      described_class.build_by_code(13)
+      described_class.find_by_code(13)
     end
   end
 end

@@ -6,7 +6,7 @@ module JpPrefecture
   module Base
     def jp_prefecture(column)
       define_method(:prefecture) do
-        Prefecture.build_by_code(send(column))
+        Prefecture.find_by_code(public_send(column))
       end
     end
   end

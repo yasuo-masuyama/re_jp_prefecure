@@ -6,6 +6,10 @@ module JpPrefecture
   class Prefecture
     extend Searchable
 
+    class << self
+      alias build_by_code find_by_code
+    end
+
     ATTRIBUTES = %i[code name name_e name_r name_h name_k area type zips].freeze
     SEARCH_KEYS = %i[name name_e name_r name_h name_k zip].freeze
 
@@ -29,10 +33,6 @@ module JpPrefecture
         current_mapping_data.map do |code, attrs|
           new(code: code, zips: build_zips(zip_mapping[code]), **attrs)
         end
-      end
-
-      def build_by_code(code)
-        all.find { |pref| pref.code == code }
       end
 
       def find(query)

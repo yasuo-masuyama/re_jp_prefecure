@@ -6,7 +6,3 @@ require_relative "re_jp_prefecture/prefecture"
 require_relative "re_jp_prefecture/base"
 require_relative "re_jp_prefecture/jp_prefecture"
 require_relative "re_jp_prefecture/version"
-
-module ReJpPrefecture
-  class Error < StandardError; end
-end

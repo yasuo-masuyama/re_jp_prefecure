@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe JpPrefecture::Base do
-  def build_model_class(column, options = {})
+  def build_model_class(column, **options)
     Class.new do
       include JpPrefecture
-      jp_prefecture column, options
+      jp_prefecture column, **options
 
       attr_accessor column
 

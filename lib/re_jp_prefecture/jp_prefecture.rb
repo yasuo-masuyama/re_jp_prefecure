@@ -12,9 +12,9 @@ module JpPrefecture
     def setup
       yield config
     end
-  end
 
-  def self.included(base)
-    base.extend(Base)
+    def included(base)
+      base.extend(Base)
+    end
   end
 end

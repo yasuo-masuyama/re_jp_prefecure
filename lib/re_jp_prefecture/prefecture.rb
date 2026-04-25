@@ -24,15 +24,13 @@ module JpPrefecture
     end
 
     class << self
+      alias build_by_code find_by_code
+
       def all
         zip_mapping = current_zip_mapping_data
         current_mapping_data.map do |code, attrs|
           new(code: code, zips: build_zips(zip_mapping[code]), **attrs)
         end
-      end
-
-      def build_by_code(code)
-        all.find { |pref| pref.code == code }
       end
 
       def find(query)

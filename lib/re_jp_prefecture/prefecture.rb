@@ -4,9 +4,6 @@ require "yaml"
 
 module JpPrefecture
   class Prefecture
-    DEFAULT_MAPPING_PATH = File.expand_path("../../data/prefecture.yml", __dir__)
-    DEFAULT_ZIP_MAPPING_PATH = File.expand_path("../../data/zip_code.yml", __dir__)
-
     ATTRIBUTES = %i[code name name_e name_r name_h name_k area type zips].freeze
 
     attr_reader(*ATTRIBUTES)
@@ -46,11 +43,14 @@ module JpPrefecture
       end
 
       def base_mapping_data
-        @base_mapping_data ||= YAML.load_file(DEFAULT_MAPPING_PATH, permitted_classes: [Symbol])
+        @base_mapping_data ||= YAML.load_file(
+          File.expand_path("../../data/prefecture.yml", __dir__),
+          permitted_classes: [Symbol]
+        )
       end
 
       def base_zip_mapping_data
-        @base_zip_mapping_data ||= YAML.load_file(DEFAULT_ZIP_MAPPING_PATH)
+        @base_zip_mapping_data ||= YAML.load_file(File.expand_path("../../data/zip_code.yml", __dir__))
       end
 
       def load_mapping_source(source)

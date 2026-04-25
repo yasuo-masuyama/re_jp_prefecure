@@ -140,6 +140,50 @@ RSpec.describe JpPrefecture::Prefecture do
     end
   end
 
+  describe ".find" do
+    it "Integer 引数はコード検索として委譲する" do
+      pref = described_class.find(13)
+      expect(pref).to be_a(described_class)
+      expect(pref.name).to eq("東京都")
+    end
+
+    it "存在しない Integer コードは nil を返す" do
+      expect(described_class.find(99)).to be_nil
+    end
+
+    {
+      name: "東京",
+      name_e: "tokyo",
+      name_r: "tōkyō",
+      name_h: "とうきょう",
+      name_k: "トウキョウ",
+      zip: 1_000_001
+    }.each do |key, value|
+      it "#{key}: キーは Searchable#find_by_#{key} に委譲する" do
+        expect(described_class.find(key => value).name).to eq("東京都")
+      end
+    end
+
+    it "該当なしの場合は nil を返す" do
+      expect(described_class.find(name: "存在しない県")).to be_nil
+      expect(described_class.find(zip: 99_999_999)).to be_nil
+    end
+
+    it "未対応キーの場合は nil を返す" do
+      expect(described_class.find(unknown: "x")).to be_nil
+    end
+
+    it "Integer / Hash 以外の引数は nil を返す" do
+      expect(described_class.find(nil)).to be_nil
+      expect(described_class.find("13")).to be_nil
+    end
+
+    it "Hash の最初のキーで委譲する" do
+      result = described_class.find(name: "東京", zip: 1)
+      expect(result.name).to eq("東京都")
+    end
+  end
+
   describe "メモ化" do
     it "デフォルトYAMLは初回のみロードされる" do
       expect(YAML).to receive(:load_file).at_most(:twice).and_call_original

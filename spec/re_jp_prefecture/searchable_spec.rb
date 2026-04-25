@@ -107,7 +107,7 @@ RSpec.describe JpPrefecture::Searchable do
 
   describe ".find_by_zip" do
     it "zips レンジに含まれる郵便番号で逆引きする" do
-      expect(dummy_class.find_by_zip(1_000_001).name).to eq("東京都")
+      expect(dummy_class.find_by_zip(1_500_000).name).to eq("東京都")
     end
 
     it "レンジ範囲外は nil を返す" do

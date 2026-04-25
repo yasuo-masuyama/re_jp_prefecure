@@ -37,9 +37,9 @@ module JpPrefecture
     private
 
     def find_by_string_prefix(value)
-      return nil if value.nil? || value.to_s.empty?
-
       query = value.to_s.downcase
+      return nil if query.empty?
+
       all.find { |record| yield(record).to_s.downcase.start_with?(query) }
     end
   end

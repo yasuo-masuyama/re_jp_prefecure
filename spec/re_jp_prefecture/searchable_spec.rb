@@ -1,28 +1,29 @@
 # frozen_string_literal: true
 
 RSpec.describe JpPrefecture::Searchable do
-  let(:dummy_class) do
-    record_struct = Struct.new(:code, :name, :name_e, :name_r, :name_h, :name_k, :zips, keyword_init: true)
-    records = [
-      record_struct.new(
-        code: 1, name: "北海道", name_e: "hokkaido", name_r: "hokkaidō",
-        name_h: "ほっかいどう", name_k: "ホッカイドウ",
-        zips: [(10_000..70_895), (400_000..996_509)]
-      ),
-      record_struct.new(
-        code: 13, name: "東京都", name_e: "tokyo", name_r: "tōkyō",
-        name_h: "とうきょうと", name_k: "トウキョウト",
-        zips: [(1_000_001..2_088_504)]
-      ),
-      record_struct.new(
-        code: 27, name: "大阪府", name_e: "osaka", name_r: "ōsaka",
-        name_h: "おおさかふ", name_k: "オオサカフ",
-        zips: [(5_300_001..5_999_999)]
-      )
+  let(:record_struct) do
+    Struct.new(:code, :name, :name_e, :name_r, :name_h, :name_k, :zips, keyword_init: true)
+  end
+
+  let(:records) do
+    [
+      record_struct.new(code: 1, name: "北海道", name_e: "hokkaido", name_r: "hokkaidō",
+                        name_h: "ほっかいどう", name_k: "ホッカイドウ",
+                        zips: [10_000..70_895, 400_000..996_509]),
+      record_struct.new(code: 13, name: "東京都", name_e: "tokyo", name_r: "tōkyō",
+                        name_h: "とうきょうと", name_k: "トウキョウト",
+                        zips: [1_000_001..2_088_504]),
+      record_struct.new(code: 27, name: "大阪府", name_e: "osaka", name_r: "ōsaka",
+                        name_h: "おおさかふ", name_k: "オオサカフ",
+                        zips: [5_300_001..5_999_999])
     ]
+  end
+
+  let(:dummy_class) do
+    target = records
     Class.new do
       extend JpPrefecture::Searchable
-      define_singleton_method(:all) { records }
+      define_singleton_method(:all) { target }
     end
   end
 

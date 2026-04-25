@@ -44,7 +44,7 @@ module JpPrefecture
           return nil unless SEARCH_KEYS.include?(key)
 
           public_send(:"find_by_#{key}", value)
-        else nil # rubocop:disable Style/EmptyElse
+        else nil
         end
       end
 

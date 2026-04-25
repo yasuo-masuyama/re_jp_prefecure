@@ -26,3 +26,6 @@ Metrics/ParameterLists:
 Metrics/MethodLength:
   Exclude:
     - "lib/re_jp_prefecture/prefecture.rb"
+
+Style/EmptyElse:
+  EnforcedStyle: empty

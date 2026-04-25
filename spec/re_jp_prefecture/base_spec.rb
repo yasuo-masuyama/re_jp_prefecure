@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe JpPrefecture::Base do
-  def build_model_class(column)
+  def build_model_class(column, options = {})
     Class.new do
       include JpPrefecture
-      jp_prefecture column
+      jp_prefecture column, options
 
       attr_accessor column
 
@@ -55,6 +55,24 @@ RSpec.describe JpPrefecture::Base do
 
       expect(first.prefecture.name).to eq("東京都")
       expect(second.prefecture.name).to eq("大阪府")
+    end
+
+    it "options[:method_name] で任意のメソッド名を定義できる" do
+      klass = build_model_class(:prefecture_code, method_name: :pref)
+      instance = klass.new(13)
+      expect(instance).to respond_to(:pref)
+      expect(instance.pref.name).to eq("東京都")
+    end
+
+    it "options[:method_name] 未指定時は :prefecture メソッドが定義される" do
+      instance = model_class.new(13)
+      expect(instance).to respond_to(:prefecture)
+    end
+
+    it "options[:method_name] 指定時は :prefecture が定義されない" do
+      klass = build_model_class(:prefecture_code, method_name: :pref)
+      expect(klass.instance_methods(false)).to include(:pref)
+      expect(klass.instance_methods(false)).not_to include(:prefecture)
     end
   end
 

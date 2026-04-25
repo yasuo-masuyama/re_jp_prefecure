@@ -163,6 +163,7 @@ RSpec.describe JpPrefecture::Prefecture do
     end
 
     {
+      code: 1,
       name: "東京",
       name_e: "tokyo",
       name_r: "tōkyō",
@@ -171,8 +172,55 @@ RSpec.describe JpPrefecture::Prefecture do
       zip: 1_000_001
     }.each do |key, value|
       it "#{key}: キーは Searchable#find_by_#{key} に委譲する" do
-        expect(described_class.find(key => value).name).to eq("東京都")
+        result = described_class.find(key => value)
+        expect(result).to be_a(described_class)
       end
+    end
+
+    it "code: キーで北海道を返す" do
+      expect(described_class.find(code: 1).name).to eq("北海道")
+    end
+
+    it "code: キーで存在しないコードは nil を返す" do
+      expect(described_class.find(code: 99)).to be_nil
+    end
+
+    it "code: キーで nil 値は nil を返す" do
+      expect(described_class.find(code: nil)).to be_nil
+    end
+
+    it "all_fields: キーで漢字部分一致（前方）でインスタンスを返す" do
+      expect(described_class.find(all_fields: "東").name).to eq("東京都")
+    end
+
+    it "all_fields: キーで英字でインスタンスを返す" do
+      expect(described_class.find(all_fields: "Hokkaido").name).to eq("北海道")
+    end
+
+    it "all_fields: キーで Integer をコードとして解釈する" do
+      expect(described_class.find(all_fields: 1).name).to eq("北海道")
+    end
+
+    it "all_fields: キーで nil 値は nil を返す" do
+      expect(described_class.find(all_fields: nil)).to be_nil
+    end
+
+    it "all_fields: キーでヒットしない値は nil を返す" do
+      expect(described_class.find(all_fields: "存在しない県")).to be_nil
+    end
+
+    it "String 引数（コード文字列）はコード検索として委譲する" do
+      expect(described_class.find("1").name).to eq("北海道")
+      expect(described_class.find("13").name).to eq("東京都")
+    end
+
+    it "String 引数で存在しないコードは nil を返す" do
+      expect(described_class.find("99")).to be_nil
+    end
+
+    it "String 引数で数値変換できない場合は nil を返す（例外を投げない）" do
+      expect { described_class.find("abc") }.not_to raise_error
+      expect(described_class.find("abc")).to be_nil
     end
 
     it "該当なしの場合は nil を返す" do
@@ -184,9 +232,8 @@ RSpec.describe JpPrefecture::Prefecture do
       expect(described_class.find(unknown: "x")).to be_nil
     end
 
-    it "Integer / Hash 以外の引数は nil を返す" do
+    it "nil 引数は nil を返す" do
       expect(described_class.find(nil)).to be_nil
-      expect(described_class.find("13")).to be_nil
     end
 
     it "Hash の最初のキーで委譲する" do

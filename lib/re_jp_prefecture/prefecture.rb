@@ -7,7 +7,7 @@ module JpPrefecture
     extend Searchable
 
     ATTRIBUTES = %i[code name name_e name_r name_h name_k area type zips].freeze
-    SEARCH_KEYS = %i[name name_e name_r name_h name_k zip].freeze
+    SEARCH_KEYS = (Searchable::ALL_FIELDS_KEYS + %i[all_fields]).freeze
 
     attr_reader(*ATTRIBUTES)
 
@@ -37,6 +37,8 @@ module JpPrefecture
         case query
         when Integer
           find_by_code(query)
+        when String
+          find_by_code(Integer(query, exception: false))
         when Hash
           key, value = query.first
           return nil unless SEARCH_KEYS.include?(key)

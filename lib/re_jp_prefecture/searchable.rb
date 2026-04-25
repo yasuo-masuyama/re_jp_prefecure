@@ -2,7 +2,7 @@
 
 module JpPrefecture
   module Searchable
-    ALL_FIELDS_KEYS = %i[code name name_e name_r name_h name_k zip].freeze
+    SEARCH_PRIORITY_KEYS = %i[code name name_e name_r name_h name_k zip].freeze
 
     def find_by_code(value)
       return nil if value.nil?
@@ -39,7 +39,7 @@ module JpPrefecture
     def find_by_all_fields(value)
       return nil if value.nil?
 
-      ALL_FIELDS_KEYS.each do |key|
+      SEARCH_PRIORITY_KEYS.each do |key|
         result = public_send(:"find_by_#{key}", value)
         return result if result
       end

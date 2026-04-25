@@ -7,7 +7,7 @@ module JpPrefecture
     extend Searchable
 
     ATTRIBUTES = %i[code name name_e name_r name_h name_k area type zips].freeze
-    SEARCH_KEYS = (Searchable::ALL_FIELDS_KEYS + %i[all_fields]).freeze
+    SEARCH_KEYS = (Searchable::SEARCH_PRIORITY_KEYS + %i[all_fields]).freeze
 
     attr_reader(*ATTRIBUTES)
 
@@ -44,6 +44,7 @@ module JpPrefecture
           return nil unless SEARCH_KEYS.include?(key)
 
           public_send(:"find_by_#{key}", value)
+        else nil
         end
       end
 

@@ -1,6 +1,0 @@
-module ReJpPrefecture
-  class Config
-    attr_accessor mapping_data: untyped
-    attr_accessor zip_mapping_data: untyped
-  end
-end

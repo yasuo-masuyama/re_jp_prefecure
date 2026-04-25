@@ -21,7 +21,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 文字列リテラル: ダブルクォート強制（`Style/StringLiterals`）
 - 行の最大長: 120文字
 - ターゲットRubyバージョン: 3.1.4
-- RBS型シグネチャ: `sig/` ディレクトリで管理
 
 ## テスト方針
 

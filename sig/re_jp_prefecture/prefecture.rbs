@@ -1,0 +1,31 @@
+module JpPrefecture
+  class Prefecture
+    DEFAULT_MAPPING_PATH: String
+    DEFAULT_ZIP_MAPPING_PATH: String
+    ATTRIBUTES: Array[Symbol]
+
+    attr_reader code: Integer
+    attr_reader name: String
+    attr_reader name_e: String
+    attr_reader name_r: String
+    attr_reader name_h: String
+    attr_reader name_k: String
+    attr_reader area: String
+    attr_reader type: String
+    attr_reader zips: Array[Range[Integer]]
+
+    def initialize: (Hash[Symbol, untyped] attrs) -> void
+
+    def self.all: () -> Array[Prefecture]
+    def self.build_by_code: (Integer code) -> Prefecture?
+
+    private
+
+    def self.current_mapping_data: () -> Hash[Integer, Hash[Symbol, String]]
+    def self.current_zip_mapping_data: () -> Hash[Integer, Array[Array[Integer]]]
+    def self.base_mapping_data: () -> Hash[Integer, Hash[Symbol, String]]
+    def self.base_zip_mapping_data: () -> Hash[Integer, Array[Array[Integer]]]
+    def self.load_mapping_source: (String | Hash[untyped, untyped] source) -> Hash[untyped, untyped]
+    def self.build_zips: (Array[Array[Integer]]? ranges) -> Array[Range[Integer]]
+  end
+end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe ReJpPrefecture::Config do
+RSpec.describe JpPrefecture::Config do
   subject(:config) { described_class.new }
 
   describe "#mapping_data" do

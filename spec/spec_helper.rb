@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "re_jp_prefecture"
+require "jp_prefecture"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

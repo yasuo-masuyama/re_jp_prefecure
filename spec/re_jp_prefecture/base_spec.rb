@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
 RSpec.describe JpPrefecture::Base do
-  let(:model_class) do
+  def build_model_class(column)
     Class.new do
       include JpPrefecture
-      jp_prefecture :prefecture_code
+      jp_prefecture column
 
-      attr_accessor :prefecture_code
+      attr_accessor column
 
-      def initialize(prefecture_code)
-        @prefecture_code = prefecture_code
-      end
+      define_method(:initialize) { |value| send("#{column}=", value) }
     end
   end
+
+  let(:model_class) { build_model_class(:prefecture_code) }
 
   describe ".jp_prefecture" do
     it "include したクラスでマクロが利用可能になる" do
@@ -32,60 +32,26 @@ RSpec.describe JpPrefecture::Base do
     end
 
     it "コードが nil の場合は nil を返す" do
-      instance = model_class.new(nil)
-      expect(instance.prefecture).to be_nil
+      expect(model_class.new(nil).prefecture).to be_nil
     end
 
     it "存在しないコードの場合は nil を返す" do
-      instance = model_class.new(99)
-      expect(instance.prefecture).to be_nil
+      expect(model_class.new(99).prefecture).to be_nil
     end
 
     it "カラム名は任意の名前を指定できる" do
-      klass = Class.new do
-        include JpPrefecture
-        jp_prefecture :pref_id
-
-        attr_accessor :pref_id
-
-        def initialize(pref_id)
-          @pref_id = pref_id
-        end
-      end
-
-      instance = klass.new(27)
-      expect(instance.prefecture.name).to eq("大阪府")
+      klass = build_model_class(:pref_id)
+      expect(klass.new(27).prefecture.name).to eq("大阪府")
     end
 
     it "カラム名に文字列を指定しても動作する" do
-      klass = Class.new do
-        include JpPrefecture
-        jp_prefecture "prefecture_code"
-
-        attr_accessor :prefecture_code
-
-        def initialize(prefecture_code)
-          @prefecture_code = prefecture_code
-        end
-      end
-
+      klass = build_model_class("prefecture_code")
       expect(klass.new(1).prefecture.name).to eq("北海道")
     end
 
     it "クラス間で prefecture メソッドが干渉しない" do
-      other_class = Class.new do
-        include JpPrefecture
-        jp_prefecture :other_code
-
-        attr_accessor :other_code
-
-        def initialize(other_code)
-          @other_code = other_code
-        end
-      end
-
       first = model_class.new(13)
-      second = other_class.new(27)
+      second = build_model_class(:other_code).new(27)
 
       expect(first.prefecture.name).to eq("東京都")
       expect(second.prefecture.name).to eq("大阪府")

@@ -144,6 +144,44 @@ RSpec.describe JpPrefecture::Searchable do
     end
   end
 
+  describe ".find_by_all_fields" do
+    it "Integer をコードとして解釈してインスタンスを返す" do
+      expect(dummy_class.find_by_all_fields(1).name).to eq("北海道")
+    end
+
+    it "name の前方一致でインスタンスを返す" do
+      expect(dummy_class.find_by_all_fields("東").name).to eq("東京都")
+    end
+
+    it "name_e（英字）の前方一致でインスタンスを返す" do
+      expect(dummy_class.find_by_all_fields("Hokkaido").name).to eq("北海道")
+    end
+
+    it "name_r（ローマ字）の前方一致でインスタンスを返す" do
+      expect(dummy_class.find_by_all_fields("ōsa").name).to eq("大阪府")
+    end
+
+    it "name_h（ひらがな）の前方一致でインスタンスを返す" do
+      expect(dummy_class.find_by_all_fields("おおさか").name).to eq("大阪府")
+    end
+
+    it "name_k（カタカナ）の前方一致でインスタンスを返す" do
+      expect(dummy_class.find_by_all_fields("オオサカ").name).to eq("大阪府")
+    end
+
+    it "zip 範囲でインスタンスを返す" do
+      expect(dummy_class.find_by_all_fields(1_500_000).name).to eq("東京都")
+    end
+
+    it "ヒットしない値は nil を返す" do
+      expect(dummy_class.find_by_all_fields("存在しない")).to be_nil
+    end
+
+    it "nil 入力に対しては nil を返す" do
+      expect(dummy_class.find_by_all_fields(nil)).to be_nil
+    end
+  end
+
   describe "Template Method 契約" do
     it "extend 先の .all を呼び出して検索する" do
       expect(dummy_class).to receive(:all).and_call_original

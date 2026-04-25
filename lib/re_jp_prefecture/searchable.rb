@@ -2,6 +2,8 @@
 
 module JpPrefecture
   module Searchable
+    ALL_FIELDS_KEYS = %i[code name name_e name_r name_h name_k zip].freeze
+
     def find_by_code(value)
       return nil if value.nil?
 
@@ -32,6 +34,16 @@ module JpPrefecture
       return nil if value.nil?
 
       all.find { |record| record.zips.any? { |range| range.cover?(value) } }
+    end
+
+    def find_by_all_fields(value)
+      return nil if value.nil?
+
+      ALL_FIELDS_KEYS.each do |key|
+        result = public_send(:"find_by_#{key}", value)
+        return result if result
+      end
+      nil
     end
 
     private

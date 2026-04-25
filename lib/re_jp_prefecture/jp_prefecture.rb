@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
 require_relative "config"
+require_relative "base"
 
 module JpPrefecture
-  module Base
-  end
-
   class << self
     def config
       @config ||= ReJpPrefecture::Config.new

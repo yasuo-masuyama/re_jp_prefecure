@@ -22,3 +22,7 @@ Style/Documentation:
 Metrics/ParameterLists:
   Exclude:
     - "lib/re_jp_prefecture/prefecture.rb"
+
+Metrics/MethodLength:
+  Exclude:
+    - "lib/re_jp_prefecture/prefecture.rb"

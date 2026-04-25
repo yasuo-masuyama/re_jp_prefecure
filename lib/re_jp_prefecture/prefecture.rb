@@ -33,7 +33,7 @@ module JpPrefecture
         end
       end
 
-      def find(query) # rubocop:disable Metrics/MethodLength
+      def find(query)
         case query
         when Integer
           find_by_code(query)

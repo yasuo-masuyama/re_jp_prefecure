@@ -151,28 +151,17 @@ RSpec.describe JpPrefecture::Prefecture do
       expect(described_class.find(99)).to be_nil
     end
 
-    it "name: キーは前方一致で検索する" do
-      expect(described_class.find(name: "東京").name).to eq("東京都")
-    end
-
-    it "name_e: キーは英名（小文字）で検索する" do
-      expect(described_class.find(name_e: "tokyo").name).to eq("東京都")
-    end
-
-    it "name_r: キーはローマ字で検索する" do
-      expect(described_class.find(name_r: "tōkyō").name).to eq("東京都")
-    end
-
-    it "name_h: キーはひらがなで検索する" do
-      expect(described_class.find(name_h: "とうきょう").name).to eq("東京都")
-    end
-
-    it "name_k: キーはカタカナで検索する" do
-      expect(described_class.find(name_k: "トウキョウ").name).to eq("東京都")
-    end
-
-    it "zip: キーは郵便番号で逆引きする" do
-      expect(described_class.find(zip: 1_000_001).name).to eq("東京都")
+    {
+      name: "東京",
+      name_e: "tokyo",
+      name_r: "tōkyō",
+      name_h: "とうきょう",
+      name_k: "トウキョウ",
+      zip: 1_000_001
+    }.each do |key, value|
+      it "#{key}: キーは Searchable#find_by_#{key} に委譲する" do
+        expect(described_class.find(key => value).name).to eq("東京都")
+      end
     end
 
     it "該当なしの場合は nil を返す" do

@@ -35,12 +35,12 @@ module JpPrefecture
         all.find { |pref| pref.code == code }
       end
 
-      def find(args)
-        case args
+      def find(query)
+        case query
         when Integer
-          find_by_code(args)
+          find_by_code(query)
         when Hash
-          key, value = args.first
+          key, value = query.first
           return nil unless SEARCH_KEYS.include?(key)
 
           public_send(:"find_by_#{key}", value)

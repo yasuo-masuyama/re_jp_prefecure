@@ -6,7 +6,7 @@ require_relative "base"
 module JpPrefecture
   class << self
     def config
-      @config ||= ReJpPrefecture::Config.new
+      @config ||= JpPrefecture::Config.new
     end
 
     def setup

@@ -5,8 +5,8 @@ RSpec.describe JpPrefecture do
   after  { JpPrefecture.instance_variable_set(:@config, nil) }
 
   describe ".config" do
-    it "ReJpPrefecture::Config のインスタンスを返す" do
-      expect(JpPrefecture.config).to be_a(ReJpPrefecture::Config)
+    it "JpPrefecture::Config のインスタンスを返す" do
+      expect(JpPrefecture.config).to be_a(JpPrefecture::Config)
     end
 
     it "メモ化されており、複数回呼び出しても同じインスタンスを返す" do

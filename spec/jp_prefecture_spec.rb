@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-RSpec.describe ReJpPrefecture do
+RSpec.describe JpPrefecture do
   it "has a version number" do
-    expect(ReJpPrefecture::VERSION).not_to be nil
+    expect(JpPrefecture::VERSION).not_to be nil
   end
 
   it "does something useful" do

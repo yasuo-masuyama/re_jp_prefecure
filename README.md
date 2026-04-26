@@ -1,35 +1,173 @@
 # JpPrefecture
 
-TODO: Delete this and the text below, and describe your gem
+`re_jp_prefecture` は、本家 [`jp_prefecture`](https://github.com/chocoby/jp_prefecture) 互換の API を意識した再実装の Ruby gem です。日本の都道府県コードと都道府県名の変換、ActiveRecord モデルとの連携を提供します。
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/jp_prefecture`. To experiment with that code, run `bin/console` for an interactive prompt.
+JIS X 0401 で定義されている都道府県コードをベースに、ゼロから始まるものはゼロを削除して使用しています。
 
-## Installation
+```
+北海道: 01 -> 1
+東京都: 13 -> 13
+```
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
+都道府県コードと都道府県名のマッピングは変更することもできます。詳しくは「都道府県のマッピング情報を変更する」の項目を参照してください。
 
-Install the gem and add to the application's Gemfile by executing:
+また、Rails のプラグインとして使用することもできます。
 
-    $ bundle add UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG
+## 使い方
 
-If bundler is not being used to manage dependencies, install the gem by executing:
+### ライブラリの読み込み
 
-    $ gem install UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG
+```ruby
+require "jp_prefecture"
+```
 
-## Usage
+### 都道府県コードから都道府県を検索
 
-TODO: Write usage instructions here
+都道府県コードを渡すと、都道府県コードから都道府県を検索します:
 
-## Development
+```ruby
+pref = JpPrefecture::Prefecture.find(13)
+# => #<JpPrefecture::Prefecture:0x... @code=13, @name="東京都", @name_e="tokyo", @name_r="tōkyō", @name_h="とうきょうと", @name_k="トウキョウト", @area="関東", @type="都", @zips=[1000000..2080035]>
+pref.code
+# => 13
+pref.name
+# => "東京都"
+pref.name_e
+# => "tokyo"
+pref.name_r
+# => "tōkyō"
+pref.name_h
+# => "とうきょうと"
+pref.name_k
+# => "トウキョウト"
+pref.area
+# => "関東"
+pref.type
+# => "都"
+```
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+以下のように書くことも可能です:
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+```ruby
+JpPrefecture::Prefecture.find(code: 13)
+```
 
-## Contributing
+### 都道府県を検索
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/re_jp_prefecture.
+前方一致で都道府県を検索します:
 
-## License
+```ruby
+# 漢字表記
+JpPrefecture::Prefecture.find(name: "東京都")
+JpPrefecture::Prefecture.find(name: "東京")
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+# 英語表記
+JpPrefecture::Prefecture.find(name_e: "tokyo")
+JpPrefecture::Prefecture.find(name_e: "Tokyo")
+
+# ローマ字表記
+JpPrefecture::Prefecture.find(name_r: "tōkyō")
+JpPrefecture::Prefecture.find(name_r: "Tōkyō")
+
+# ひらがな表記
+JpPrefecture::Prefecture.find(name_h: "とうきょうと")
+
+# カタカナ表記
+JpPrefecture::Prefecture.find(name_k: "トウキョウト")
+```
+
+マッピングのすべての項目を検索します (推奨しません):
+
+```ruby
+JpPrefecture::Prefecture.find(all_fields: "東京")
+```
+
+### 都道府県の一覧を取得
+
+```ruby
+JpPrefecture::Prefecture.all
+# => [#<JpPrefecture::Prefecture:0x... @code=1, @name="北海道", @name_e="hokkaido", @name_r="hokkaidō", @name_h="ほっかいどう", @name_k="ホッカイドウ", @area="北海道", @type="道", @zips=[10000..70895, 400000..996509]>, ...]
+```
+
+### Rails (ActiveRecord) で使用する
+
+`ActiveRecord::Base` を継承した Model で、都道府県コードを扱うことができます。
+
+app/models/place.rb:
+
+```ruby
+# prefecture_code:integer
+class Place < ActiveRecord::Base
+  include JpPrefecture
+
+  jp_prefecture :prefecture_code
+end
+```
+
+`prefecture` というメソッドが生成され、都道府県コード、都道府県名が参照できるようになります:
+
+```ruby
+place = Place.new
+place.prefecture_code = 13
+place.prefecture.name
+# => "東京都"
+```
+
+生成されるメソッド名は `method_name` というオプションで指定することができます:
+
+```ruby
+# model
+jp_prefecture :prefecture_code, method_name: :pref
+
+place = Place.new
+place.prefecture_code = 13
+place.pref.name
+# => "東京都"
+```
+
+### テンプレートで使用する
+
+`collection_select` を使用して、都道府県のセレクトボックスを生成することができます:
+
+```ruby
+f.collection_select :prefecture_code, JpPrefecture::Prefecture.all, :code, :name
+
+# 英語表記で出力
+f.collection_select :prefecture_code, JpPrefecture::Prefecture.all, :code, :name_e
+```
+
+### 都道府県のマッピング情報を変更する
+
+デフォルトのマッピング情報以外のものを使用したい場合、以下のようにカスタマイズされたマッピングデータを指定することができます:
+
+```ruby
+custom_mapping_path = "/path/to/mapping_data.yml"
+
+JpPrefecture.setup do |config|
+  config.mapping_data = YAML.load_file(custom_mapping_path)
+end
+```
+
+マッピングデータのフォーマットについては [prefecture.yml](https://github.com/yasuo-masuyama/re_jp_prefecure/blob/master/data/prefecture.yml) を参考にしてください。
+
+### 郵便番号の情報を変更する
+
+```ruby
+custom_zip_mapping_path = "/path/to/zip_mapping_data.yml"
+
+JpPrefecture.setup do |config|
+  config.zip_mapping_data = YAML.load_file(custom_zip_mapping_path)
+end
+```
+
+データのフォーマットについては [zip_code.yml](https://github.com/yasuo-masuyama/re_jp_prefecure/blob/master/data/zip_code.yml) を参考にしてください。
+
+## インストール
+
+RubyGems には未公開です。以下の行を `Gemfile` に記述してから:
+
+```ruby
+gem "re_jp_prefecture", git: "https://github.com/yasuo-masuyama/re_jp_prefecure"
+```
+
+`bundle` を実行してください。
